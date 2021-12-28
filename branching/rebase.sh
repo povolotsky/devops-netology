@@ -1,10 +1,9 @@
 #!/bin/bash
 # display command line options
-# 10/01/2022
+# add 10/01/2022
 count=1
-for param in "$@*"; do
-    echo "Next parameter = $param"
+for param in "$*"; do
+    echo "\$* Parameter #$count = $param"
     count=$(( $count + 1 ))
 done
 
-echo "===="
