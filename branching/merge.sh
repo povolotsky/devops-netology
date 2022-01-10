@@ -2,7 +2,7 @@
 # display command line options
 
 count=1
-while [[ -n "$1" ]]; do    
+for param in "S*"; do    
     echo "\$* Parameter #$count = $param"
     shift
 done
