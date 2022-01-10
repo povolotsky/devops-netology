@@ -1,5 +1,6 @@
 #!/bin/bash
 # display command line options
+<<<<<<< HEAD
 # 10/01/2022
 count=1
 for param in "$@*"; do
