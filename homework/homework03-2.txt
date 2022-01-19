@@ -1,0 +1,122 @@
+1 cd какой тип у команды
+
+type -a cd
+cd is a shell builtin
+
+команда встроенная в оболочку bash. Елси это была бы внешняя команда то внутри оболочки bash было бы невозможно выполнять простейшие действия такие как смена каталога. Если мы устанавливаем каку-то оболочку, то вместе с ней получаем базовый набор команд core-utils.
+
+2 grep <string> <some_file> | wc -l
+
+grep <string> <some_file> -c 
+
+man grep 82 строка параметр -c Count 
+
+3 какой процесс с PID1 является родителем для всех процессов в виртулаьном машине Ubuntu
+pstree -p
+systemd(1)
+
+4 как будет выглядеть команда которая перенаправит stderr ls на другую сессию терминала
+
+ls -l > /dev/pst1
+
+5 можно ли одновременно передать файл на stdin и передать ее stdout в другой файл
+
+grep some_string < file.txt  > out.txt
+
+6 в терминал можно выводить stdout
+
+tty 
+/dev/pts/0
+
+echo " hello " > /dev/pts/1 
+
+hello
+
+7 выполнить команду bash 5 >&1 
+
+создается дескриптор 5 
+откроем терминал echo $$
+2701
+
+открываем соседний псевдотерминал в ней даем команду
+
+echo netology > /proc/$$/fd/0
+
+в псевдотерминале /dev/pts/0 будет выведено netology. C псевдотерминалом создан дескриптор 
+
+ls -la /proc/2701/fd
+total 0
+dr-x------ 2 parallels parallels  0 Jan 19 15:10 .
+dr-xr-xr-x 9 parallels parallels  0 Jan 19 15:10 ..
+lrwx------ 1 parallels parallels 64 Jan 19 15:10 0 -> /dev/pts/0
+lrwx------ 1 parallels parallels 64 Jan 19 15:10 1 -> /dev/pts/0
+lrwx------ 1 parallels parallels 64 Jan 19 15:10 2 -> /dev/pts/0
+lrwx------ 1 parallels parallels 64 Jan 19 15:11 255 -> /dev/pts/0
+ 
+8 
+
+0 -stdin
+1 - stdout
+2 - stderr 
+
+ls -la /root 9>&2 2>&1 1>&9 | wc -l
+1
+
+9>&2 - новый дескриптор перенаправили в stderr
+2>&1 - stderr перенаправили в stdout 
+1>&9 - stdout - перенаправили в в новый дескриптор 
+
+9 cat /proc/$$/environ
+env
+printenv
+
+10 man proc PID>/cmdline /proc/<PID>/exe
+
+proc псевдо-файловая система с информацией о процессах
+
+PID - proccess ID 
+
+cmdline содержит полную командную строку запуска процесса
+
+exe является символьной ссылкой которая содержит полное имя выполняемого файла. Можно запустить /proc/<PID>/exe и запустить другую копию процесса
+
+11 как узнать старшую версию набора SSE
+
+cat /proc/cpuinfo
+processor	: 0
+BogoMIPS	: 48.00
+Features	: fp asimd evtstrm aes pmull sha1 sha2 crc32 atomics fphp asimdhp cpuid asimdrdm jscvt fcma lrcpc dcpop sha3 asimddp sha512 asimdfhm dit uscat ilrcpc flagm ssbs sb paca pacg dcpodp flagm2 frint
+CPU implementer	: 0x41
+CPU architecture: 8
+CPU variant	: 0x0
+CPU part	: 0x000
+CPU revision	: 0
+
+процессор М1 - не является процессором intel и не может поддерживать инструкции intel
+
+12 ssh localhost tty
+
+mot a tty
+
+tty teletyp
+
+выполняется подключение к localhost по протоколу ssh
+
+ssh localhost -t tty
+     -t      Force pseudo-terminal allocation.  This can be used to execute arbitrary screen-based
+             programs on a remote machine, which can be very useful, e.g. when implementing menu ser‐
+             vices.  Multiple -t options force tty allocation, even if ssh has no local tty.
+
+13 «reptyr PID» захватит процесс с идентификатором PID и подключит его к вашему текущему терминалу.
+
+14 sudo echo string > /root/new_file 
+
+tee - read from standard input and write to standard output and files
+
+tee используется для разделения выводимых программой данных, таким образом данные могут быть использованы для вывода на дисплей и сохранены в файл. Т е читает стандартный ввод и позволяет одновременно делать вывывод в файлы
+
+sudo echo запускает sudo только в текущем терминале без возможности запуска с правами sudo в соседнем терминале
+
+echo "string" | sudo tee -a file.txt повзволяет получить на вход строку и записать ее в файл который принадлежит другому пользователю. Команда tee позволяет записывать выаод команд в файл а не только как echo нна экран терминала stdout 
+
+
