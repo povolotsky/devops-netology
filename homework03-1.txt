@@ -1,0 +1,73 @@
+1 install parallels. ОС на хосте mac os M1 
+2 brew install vagrant 
+
+3 установлен iterm2 
+
+4 vagrant init
+
+vagrant plugin install vagrant-parallels
+
+правка конфигурационного файла 
+
+config.vm.box = "bento/ubuntu-20.04 ARM64"
+
+
+5 виртуальной машине презентованы 2 vCPU, 2048 Gb RAM со стороны  Parallels
+
+6 Как добавить памяти на гостевой машине
+
+в конфигурационном файле Vagrant прописать
+
+config.vm.provider "virtualbox" do |vb|
+    # объем оперативной памяти
+    vb.memory = 2048
+    # количество ядер процессора
+    vb.cpus = 1
+  end
+
+7 vagrant ssh
+
+8 man bash
+
+HISTFILESIZE - параметр определяющий максимальное число строк в histiry файле. В мане строка 1155
+
+ignoreboth. Это сокращенное обозначение ignorespaces(команды, начинающиеся с пробелов) и ignoredups(дубликаты). Убирает из history команды начинающиеся с пробелом и команды содержащие дубли.
+
+9 В каких сценариях примеными скобки {} и где это написано
+
+можно использовать массив данных. Описание идет в разделе Arrays 1388 строка. Можно использовать специальный масси данных( список ) по которому можно работать с переменными из массив вида name1..nameN, где идет список переменных от 1 до N
+
+10 touch 100000 файлов
+
+touch {1..100000}.txt
+создать 300 000 не получилось argument list too longa
+параметр ARG_MAX ограничивает использование максимальной длинны для аргументов в командной строке
+
+getconf ARG_MAX 2097152 - максимально расзеренный размер параметров
+
+11 [[ -d /tmp]]  bash выполнет проверку условий внутри выражения в квадратных скобках 
+
+и выдает результат 0 или 1 в зависимости от истиности проверки
+
+12 
+
+$ mkdir /tmp/new_path_directory/
+$ cp /bin/bash /tmp/new_path_directory/
+$ type -a bash
+bash is /usr/bin/bash
+bash is /bin/bash
+$ PATH=/tmp/new_path_directory/:$PATH
+$ type -a bash
+bash is /tmp/new_path_directory/bash
+bash is /usr/bin/bash
+bash is /bin/bash
+
+13 at команда берет дату и время запуска команды например 
+
+echo "Hello world" | at 12:00
+
+batch запускает команду при загрузке системы меньше 0.8
+
+executes commands when system load levels permit; in other words, when the load average drops below 0.8, or the value specified in the invocation of atd. 
+
+ 
