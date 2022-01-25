@@ -1,0 +1,144 @@
+1 какой системный выхов делает команда cd
+
+strace /bin/bash -c 'cd /tmp'
+execve("/bin/bash", ["/bin/bash", "-c", "cd /tmp"], 0xfffff9296670 /* 48 vars */) = 0
+brk(NULL)                               = 0xaaaae514f000
+
+в итоге запускает системный вызов newfstatat каталог /tmp и далее chdir 
+
+newfstatat(AT_FDCWD, "/tmp", {st_mode=S_IFDIR|S_ISVTX|0777, st_size=4096, ...}, 0) = 0
+chdir("/tmp")  
+
+2 Попробуйте использовать команду file на объекты разных типов на файловой системе. 
+
+openat(AT_FDCWD, "/usr/share/misc/magic.mgc", O_RDONLY) = 3
+
+/usr/share/misc/magis.mgc 
+
+пытается искать 
+
+/home/parallels/.magic.mgc", 0xffffdcc70fa8, 0) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD, "/home/parallels/.magic", 0xffffdcc70fa8, 0) = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, "/etc/magic.mgc", O_RDONLY) = -1 ENOENT (No such file or directory)
+newfstatat(AT_FDCWD, "/etc/magic
+
+3 сначала ищем процесс записи 
+
+например taif -f > var/log/debug.log
+
+ps -eda | grep tail  покажет номер процессаa
+
+11540 tail
+
+echo '' > proc/11540/fd/4
+
+4 анимают ли зомби-процессы какие-то ресурсы в ОС (CPU, RAM, IO)
+Зомби - это мертвые процессы. Они не занимают ресурсы но занимают номер процесса в таблице списка процессов
+
+5 В iovisor BCC есть утилита opensnoop:
+
+
+
+sudo /usr/sbin/opensnoop-bpfcc
+PID    COMM               FD ERR PATH
+32458  sh                 -1   2 
+32458  sh                 -1   2 
+32458  sh                 -1   2 
+32458  sh                 -1   2 
+32458  sh                 -1   2 
+32458  sh                 -1   2 
+32458  sh                 -1   2 
+32458  sh                 -1   2 
+32458  sh                  9   0 
+32458  sh                  9   0 
+32460  sed                -1   2 
+32460  sed                -1   2 
+32460  sed                -1   2 
+32460  sed                -1   2 
+32460  sed                -1   2 
+32460  sed                -1   2 
+
+6 uname -a
+
+man uname 
+
+NAME
+       uname - print system information
+
+SYNOPSIS
+       uname [OPTION]...
+
+DESCRIPTION
+       Print certain system information.  With no OPTION, same as -s.
+
+       -a, --all
+              print  all  information,  in the following order, except omit -p
+              and -i if unknown:
+
+uname -a
+Linux ubuntu-linux-20-04-desktop 5.4.0-94-generic #106-Ubuntu SMP Thu Jan 6 23:59:31 UTC 2022 aarch64 aarch64 aarch64 GNU/Linux
+ вывод инфомации о системе, дистрибутиве, версии ядр
+
+
+cat /proc/sys/kernel/version 
+#106-Ubuntu SMP Thu Jan 6 23:59:31 UTC 2022
+
+7 Чем отличается последовательность команд через ; и через && в bash? 
+
+в случае && команды будут выполняться последовательно. Вторая команда выполнится только после успешного выполнения первой
+
+cmd1&& cmd2
+
+в случае ; команды выполняются независимо от успеха выполнения 
+
+8 Из каких опций состоит режим bash set -euxo pipefail
+
+
+set -e - прекращает выполнение скрипта если команда завершилась ошибкой, выводит в stderr строку с ошибкой. 
+
+set -u - прекращает выполнение скрипта, если встретилась несуществующая переменная.
+
+set -x - выводит выполняемые команды в stdout перед выполненинем.
+
+set -o pipefail - прекращает выполнение скрипта, даже если одна из частей пайпа завершилась ошибкой. В этом случае bash-скрипт завершит выполнение, если mycommand вернёт ошибку, не смотря на true в конце пайплайна: mycommand | true.
+
+режим позволяет запускать команды с отладчиком, прекращать если были ошибки и проводить отладку скрипта при запуске.  
+
+9 -o stat для ps 
+
+ D    uninterruptible sleep (usually IO)
+               I    Idle kernel thread
+               R    running or runnable (on run queue)
+               S    interruptible sleep (waiting for an event to complete)
+               T    stopped by job control signal
+               t    stopped by debugger during the tracing
+               W    paging (not valid since the 2.6.xx kernel)
+               X    dead (should never be seen)
+               Z    defunct ("zombie") process, terminated but not reaped by
+                    its parent
+
+наибольшее количество процессов S процессов ожидающих ( спящих) завершения события
+ps -edal
+F S   UID     PID    PPID  C PRI  NI ADDR SZ WCHAN  TTY          TIME CMD
+4 S     0       1       0  0  80   0 - 42542 -      ?        00:00:03 systemd
+1 S     0       2       0  0  80   0 -     0 -      ?        00:00:00 kthreadd
+1 I     0       3       2  0  60 -20 -     0 -      ?        00:00:00 rcu_gp
+1 I     0       4       2  0  60 -20 -     0 -      ?        00:00:00 rcu_par_gp
+1 I     0       6       2  0  60 -20 -     0 -      ?        00:00:00 kworker/0:
+1 I     0       8       2  0  60 -20 -     0 -      ?        00:00:00 mm_percpu_
+1 S     0       9       2  0  80   0 -     0 -      ?        00:00:00 ksoftirqd/
+1 I     0      10       2  0  80   0 -     0 -      ?        00:00:02 rcu_sched
+1 S     0      11       2  0 -40   - -     0 -      ?        00:00:00 migration/
+5 S     0      12       2  0   9   - -     0 -      ?        00:00:00 idle_injec
+1 S     0      14       2  0  80   0 -     0 -      ?        00:00:00 cpuhp/0
+1 S     0      15       2  0  80   0 -     0 -      ?        00:00:00 cpuhp/1
+5 S     0      16       2  0   9   - -     0 -      ?        00:00:00 idle_injec
+1 S     0      17       2  0 -40   - -     0 -      ?        00:00:00 migration/
+1 S     0      18       2  0  80   0 -     0 -      ?        00:00:00 ksoftirqd/
+1 I     0      20       2  0  60 -20 -     0 -      ?        00:00:00 kworker/1:
+5 S     0      21       2  0  80   0 -     0 -      ?        00:00:00 kdevtmpfs
+1 I     0      22       2  0  60 -20 -     0 -      ?        00:00:00 netns
+1 S     0      23       2  0  80   0 -     0 -      ?        00:00:00 rcu_tasks_
+1 S     0      25       2  0  80   0 -     0 -      ?        00:00:00 kauditd
+1 S     0      26       2  0  80   0 -     0 -      ?        00:00:00 khungtaskd
+ 
